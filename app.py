@@ -1,18 +1,25 @@
 from flask import Flask, render_template, request
-import whois
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        domain = request.form['domain']
+        url = request.form['url']
         try:
-            whois.whois(domain)
-            available = False
-        except whois.parser.PywhoisError:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            content = soup.get_text()[:100]
             available = True
-        return render_template('index.html', available=available, domain=domain)
+        except:
+            content = ''
+            available = False
+        return f'''
+            <p>The first 100 characters of {url}:</p>
+            <pre>{content}</pre>
+            ''' if available else f'<p>The URL {url} could not be accessed.</p>'
     else:
         return render_template('index.html')
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Check URL Response</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('form').on('submit', function(event) {
+          event.preventDefault();
+          $.ajax({
+            url: '/',
+            type: 'POST',
+            data: $('form').serialize(),
+            success: function(response) {
+              $('#result').html(response);
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="result">
+      {% if available is not none %}
+        {% if available %}
+        <p>The first 100 characters of {{ url }}:</p>
+        <pre>{{ content }}</pre>
+        {% else %}
+        <p>The URL {{ url }} could not be accessed.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+    <form method="post">
+      <input type="text" name="url" placeholder="Enter URL">
+      <input type="submit" value="Check response">
+    </form>
+  </body>
+</html>
